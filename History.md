@@ -3,7 +3,7 @@
 ### Future
 
 ### 0.9.0
-- Add new `allow_overrides` option
+- Add `ssl_verify` option (#108)
 
 ### 0.8.0
 - Replace Patron with Excon HTTP client
