@@ -33,6 +33,10 @@ class ElasticsearchOutput < Test::Unit::TestCase
     {'_index' => 'my_index', '_type' => 'my_type', '_id' => 'my_id', '_parent' => 'my_parent_id'}
   end
 
+  def sample_record_allow_overrides_empty
+    {'_index' => '', '_type' => '', '_id' => '', '_parent' => ''}
+  end
+
   def stub_elastic_ping(url="http://localhost:9200")
     stub_request(:head, url).to_return(:status => 200, :body => "", :headers => {})
   end
@@ -535,6 +539,16 @@ class ElasticsearchOutput < Test::Unit::TestCase
     assert_equal(sample_record_allow_overrides['_index'], index_cmds.first['index']['_index'])
   end
 
+  def test_allow_override_ignores_empty_parent
+    stub_elastic_ping
+    stub_elastic
+
+    driver.configure("allow_overrides true")
+    driver.emit(sample_record_allow_overrides_empty)
+    driver.run
+    assert_equal(nil, index_cmds.first['index']['_index'])
+  end
+
   def test_allow_override_keeps_type
     stub_elastic_ping
     stub_elastic
@@ -549,6 +563,20 @@ class ElasticsearchOutput < Test::Unit::TestCase
     driver.run
     assert_equal(sample_record_allow_overrides['_type'], index_cmds.first['index']['_type'])
   end
+
+  def test_allow_override_ignores_empty_type
+    stub_elastic_ping
+    stub_elastic
+
+    driver.configure(%{
+      allow_overrides true
+      type_name mytypename
+    })
+    driver.emit(sample_record_allow_overrides_empty)
+    driver.run
+    assert_equal('mytypename', index_cmds.first['index']['_type'])
+  end
+
 
   def test_allow_override_keeps_id
     stub_elastic_ping
@@ -565,6 +593,16 @@ class ElasticsearchOutput < Test::Unit::TestCase
     assert_equal(sample_record_allow_overrides['_id'], index_cmds.first['index']['_id'])
   end
 
+  def test_allow_override_ignores_empty_id
+    stub_elastic_ping
+    stub_elastic
+
+    driver.configure("allow_overrides true")
+    driver.emit(sample_record_allow_overrides_empty)
+    driver.run
+    assert_equal(nil, index_cmds.first['index']['_id'])
+  end
+
   def test_allow_override_keeps_parent
     stub_elastic_ping
     stub_elastic
@@ -579,5 +617,17 @@ class ElasticsearchOutput < Test::Unit::TestCase
     driver.run
     assert_equal(sample_record_allow_overrides['_parent'], index_cmds.first['index']['_parent'])
   end
+
+  def test_allow_override_ignores_empty_parent
+    stub_elastic_ping
+    stub_elastic
+
+    driver.configure("allow_overrides true")
+    driver.emit(sample_record_allow_overrides_empty)
+    driver.run
+    assert_equal(nil, index_cmds.first['index']['_parent'])
+  end
+
+
 
 end
