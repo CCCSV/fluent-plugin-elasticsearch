@@ -160,11 +160,11 @@ class Fluent::ElasticsearchOutput < Fluent::BufferedOutput
       end
 
       meta = { "index" => {"_index" => target_index, "_type" => type_name} }
-      if @allow_overrides && record.has_key?("_index") && !record["_index"].empty?
+      if @allow_overrides && record.has_key?("_index") && !record["_index"].to_s.empty?
         meta['index']['_index'] = record['_index']
       end
 
-      if @allow_overrides && record.has_key?("_type") && !record["_type"].empty?
+      if @allow_overrides && record.has_key?("_type") && !record["_type"].to_s.empty?
         meta['index']['_type'] = record['_type']
       end
 
@@ -172,15 +172,15 @@ class Fluent::ElasticsearchOutput < Fluent::BufferedOutput
         meta['index']['_id'] = record[@id_key]
       end
 
-      if @allow_overrides && record.has_key?('_id') && !record['_id'].empty?
+      if @allow_overrides && record.has_key?('_id') && !record['_id'].to_s.empty?
         meta['index']['_id'] = record['_id']
       end
 
-      if @parent_key && record[@parent_key] && !record[@parent_key].empty?
+      if @parent_key && record[@parent_key] && !record[@parent_key].to_s.empty?
         meta['index']['_parent'] = record[@parent_key]
       end
 
-      if @allow_overrides && record.has_key?('_parent') && !record['_parent'].empty?
+      if @allow_overrides && record.has_key?('_parent') && !record['_parent'].to_s.empty?
         meta['index']['_parent'] = record['_parent']
       end
 
